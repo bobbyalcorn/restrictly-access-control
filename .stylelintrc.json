@@ -1,0 +1,13 @@
+{
+  "extends": [
+    "@wordpress/stylelint-config",
+    "stylelint-config-standard"
+  ],
+  "rules": {
+    "color-no-invalid-hex": true,
+    "max-nesting-depth": 3,
+    "selector-max-id": 0,
+    "block-no-empty": true,
+    "declaration-block-no-duplicate-properties": true
+  }
+}

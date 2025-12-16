@@ -1,0 +1,46 @@
+GNU GENERAL PUBLIC LICENSE
+Version 2, June 1991
+
+License: GNU General Public License, version 2 (GPL-2.0) or later
+Copyright (C) 2025 Bobby Alcorn (https://restrictlypro.com)
+
+This program is free software; you can redistribute it and/or modify it under the terms of the
+GNU General Public License as published by the Free Software Foundation; either version 2 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, see <https://www.gnu.org/licenses/gpl-2.0.html>.
+
+--------------------------------------------------
+Additional Licensing Information
+--------------------------------------------------
+
+Restrictly™ is licensed under GPL-2.0+ to ensure full compliance with WordPress plugin guidelines.
+This means:
+
+1. **Core Plugin**
+   The core plugin is and will remain free and open-source under the GPL-2.0+ license.
+
+2. **Premium Extensions**
+   Premium add-ons and extensions may be released under separate commercial licenses.
+   However, any code that integrates directly with WordPress must remain GPL-compatible.
+
+3. **Commercial Services**
+   Services such as updates, support, API access, and cloud features may be offered under
+   separate commercial terms without affecting the GPL status of the core plugin.
+
+Any distribution or modification of the Restrictly™ core plugin must retain this license
+and make the source code available under GPL terms.
+
+--------------------------------------------------
+Contact Information
+--------------------------------------------------
+
+For commercial licensing or general inquiries:
+Website: https://restrictlypro.com
+GitHub:  https://github.com/bobbyalcorn/restrictly

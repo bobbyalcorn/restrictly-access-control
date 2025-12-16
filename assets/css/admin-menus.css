@@ -1,0 +1,90 @@
+/**
+ * Restrictly Admin Menu Styles
+ *
+ * @package    Restrictly
+ * @since      0.1.0
+ */
+
+/* Restrictly Menu Panel */
+.restrictly-menu-panel {
+  background: #fae9e0;
+  border: 1px solid #f0c9b2;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+  box-sizing: border-box;
+  margin: 10px 0;
+  padding: 10px 15px;
+}
+
+.restrictly-menu-panel-title {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f69b5d;
+  font-size: 14px;
+  margin-top: 0;
+}
+
+/* Styling for Restrictly warnings */
+.restrictly-mismatch-warning {
+  color: #ff5722;
+  font-weight: 700;
+  font-size: 12px;
+  margin: 5px 0;
+}
+
+/* Highlight menu items with mismatched settings */
+.menu-item-settings.has-restrictly-mismatch {
+  border-left: 4px solid #ffa500 !important;
+}
+
+/* === Field-Level Highlights === */
+.restrictly-match-field {
+  border: 2px solid #4caf50 !important;
+  background: rgb(76 175 80 / 10%);
+}
+
+.restrictly-match-visibility {
+  border: 2px solid #4caf50 !important;
+  background: rgb(76 175 80 / 10%);
+}
+
+.restrictly-mismatch-field {
+  border: 2px solid #ff5722 !important;
+  background: rgb(255 87 34 / 10%);
+}
+
+/* === Restrictly Menu Row Highlights === */
+
+/* ORANGE — Mismatch (incorrect) */
+li.menu-item.restrictly-mismatch > .menu-item-bar {
+  border-left: 4px solid #ffa500 !important;
+  padding-left: 10px !important;
+}
+
+/* GREEN — Match (restricted & aligned) */
+li.menu-item.restrictly-match > .menu-item-bar {
+  border-left: 4px solid #4caf50 !important;
+  padding-left: 10px !important;
+}
+
+/* GREY — Neutral (unaffected / unrestricted) */
+li.menu-item.restrictly-neutral > .menu-item-bar {
+  border-left: 4px solid #bdbdbd !important;
+  padding-left: 10px !important;
+}
+
+/* === Fallbacks using :has() (placed last to satisfy no-descending-specificity) === */
+
+li.menu-item:has(> .menu-item-settings.has-restrictly-mismatch) > .menu-item-bar {
+  border-left: 4px solid #ffa500 !important;
+  padding-left: 10px !important;
+}
+
+li.menu-item:has(> .menu-item-settings.has-restrictly-match) > .menu-item-bar {
+  border-left: 4px solid #4caf50 !important;
+  padding-left: 10px !important;
+}
+
+li.menu-item:has(> .menu-item-settings.has-restrictly-neutral) > .menu-item-bar {
+  border-left: 4px solid #bdbdbd !important;
+  padding-left: 10px !important;
+}

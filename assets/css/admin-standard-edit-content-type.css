@@ -1,0 +1,46 @@
+/**
+ * Restrictly Admin Standard Edit Content Type Styles
+ *
+ * @package    Restrictly
+ * @since      0.1.0
+ */
+
+/* Restrictly Menu Panel */
+[id*='restrictly_'] .postbox-header {
+  background: #fae9e0;
+  border-top: 1px solid #f0c9b2;
+  border-left: 1px solid #f0c9b2;
+  border-right: 1px solid #f0c9b2;
+  -moz-border-radius-topleft: 6px;
+  border-top-left-radius: 6px;
+  -moz-border-radius-topright: 6px;
+  border-top-right-radius: 6px;
+  box-sizing: border-box;
+  margin: 20px 20px 0 !important;
+  padding: 0 !important;
+  border-bottom: 1px solid #f69b5d;
+}
+
+[id*='restrictly_'].postbox .inside {
+  margin-top: 0 !important;
+  padding: 0 20px 24px !important;
+}
+
+[id*='restrictly_'] .postbox-header .hndle {
+  display: block !important;
+  padding: 0 12px !important;
+}
+
+.restrictly-inside {
+  background: #fae9e0;
+  border-bottom: 1px solid #f0c9b2;
+  border-left: 1px solid #f0c9b2;
+  border-right: 1px solid #f0c9b2;
+  -moz-border-radius-bottomleft: 6px;
+  border-bottom-left-radius: 6px;
+  -moz-border-radius-bottomright: 6px;
+  border-bottom-right-radius: 6px;
+  box-sizing: border-box;
+  margin: 0 0 20px !important;
+  padding: 10px !important;
+}

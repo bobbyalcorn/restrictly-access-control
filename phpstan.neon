@@ -1,0 +1,32 @@
+parameters:
+	bootstrapFiles:
+		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+
+	level: 6
+	treatPhpDocTypesAsCertain: false
+	reportUnmatchedIgnoredErrors: false
+
+	tmpDir: /home/restrictlypro/.phpstan/cache
+
+	paths:
+		- src
+		- restrictly-access-control.php
+		- uninstall.php
+
+	excludePaths:
+		- vendor/*
+		- node_modules/*
+		- languages/*
+
+	ignoreErrors:
+		# Generic WordPress dynamic behavior.
+		- '#Call to function add_action\(\) not found#'
+		- '#Call to function add_filter\(\) not found#'
+		- '#Call to function do_action\(\) not found#'
+		- '#Call to function apply_filters\(\) not found#'
+		- '#Call to function esc_.* not found#'
+		- '#Call to function __\(\) not found#'
+		- '#Call to function _e\(\) not found#'
+		- '#Call to function get_option#'
+		- '#Call to function get_post_meta#'
+		- '#WP_REST_Request but does not specify its types#'

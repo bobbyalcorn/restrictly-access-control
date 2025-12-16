@@ -1,0 +1,87 @@
+# =========================================================
+# 🧹 Restrictly™ .distignore
+# Purpose: Defines files and directories excluded from
+#          production and distribution builds.
+# =========================================================
+
+# ----------------------------------------
+# 🔧 Development & Tooling
+# ----------------------------------------
+.git
+.github
+.vscode
+.idea
+node_modules
+vendor
+tests
+dist
+scripts
+npm
+
+# ----------------------------------------
+# 🧱 Build Scripts (root-level)
+# ----------------------------------------
+build.sh
+build-github.sh
+build-repo.sh
+TESTING.md
+
+# ----------------------------------------
+# 🖼️ Branding & Media Assets
+# ----------------------------------------
+# All marketing and repo visuals (banners, icons, screenshots)
+# Used only by build-github.sh and build-repo.sh
+branding
+
+# Legacy screenshot folder (kept for backward compatibility)
+screenshots
+
+# ----------------------------------------
+# ⚙️ Config & Build Files
+# ----------------------------------------
+composer.json
+composer.lock
+package.json
+package-lock.json
+webpack.config.js
+vite.config.js
+postcss.config.js
+tailwind.config.js
+tsconfig.json
+phpcs.xml
+phpcs.xml.dist
+phpcs.ruleset.xml
+phpstan.neon
+phpstan.neon.dist
+eslint*
+stylelint*
+.prettierrc*
+.editorconfig
+.gitattributes
+.gitignore
+.distignore
+.jshintrc
+.stylelintignore
+.stylelintrc.json
+.eslintrc
+eslint.config.js
+
+# ----------------------------------------
+# 🧾 Documentation (included only in GitHub builds)
+# ----------------------------------------
+README.md
+CHANGELOG.md
+
+# ----------------------------------------
+# 🗑️ Misc / System Artifacts
+# ----------------------------------------
+*.phar
+*.log
+*.xml
+*.dat
+*.map
+.DS_Store
+Thumbs.db
+error_log
+object_id
+object_id,

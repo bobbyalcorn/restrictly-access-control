@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<ruleset name="Restrictly Coding Standards">
+	<description>
+		Restrictly™ plugin coding standards — modern WordPress + PHPCompatibility.
+	</description>
+
+	<!-- === Target === -->
+	<file>./</file>
+
+	<!-- === Exclusions === -->
+	<exclude-pattern>vendor/*</exclude-pattern>
+	<exclude-pattern>node_modules/*</exclude-pattern>
+	<exclude-pattern>wp-cli.phar</exclude-pattern>
+	<exclude-pattern>*.js</exclude-pattern>
+	<exclude-pattern>assets/js/*</exclude-pattern>
+	<exclude-pattern>*.css</exclude-pattern>
+	<exclude-pattern>assets/css/*</exclude-pattern>
+
+	<!-- === PHP Compatibility === -->
+	<config name="testVersion" value="7.4-8.3" />
+
+	<!-- === Rulesets === -->
+	<rule ref="WordPress-Core">
+		<exclude name="WordPress.Files.FileName" />
+	</rule>
+
+	<rule ref="WordPress-Docs">
+		<exclude name="WordPress.Files.FileName" />
+	</rule>
+
+	<rule ref="WordPress-Extra">
+		<exclude name="WordPress.Files.FileName" />
+	</rule>
+
+	<rule ref="PHPCompatibilityWP" />
+</ruleset>

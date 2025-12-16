@@ -1,0 +1,87 @@
+# =========================================================
+# Restrictly™ .gitignore
+# Keep the repository clean while retaining all necessary
+# files for builds, testing, and releases.
+# =========================================================
+
+# ----------------------------------------
+# 🔧 Composer (PHP Dependencies)
+/vendor/
+# ✅ Keep composer.lock for reproducible installs
+
+# ----------------------------------------
+# ⚙️ Node (JavaScript / CSS Tooling)
+/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+# ✅ Keep package-lock.json for reproducible installs
+
+# ----------------------------------------
+# 🧰 WP-CLI (Optional Local Binary)
+/wp-cli.phar
+
+# ----------------------------------------
+# 🧹 Build & Lint Cache Files
+/.phpcs-cache
+/.eslintcache
+/.stylelintcache
+
+# ----------------------------------------
+# 🧠 OS, IDE & Backup Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.sass-cache/
+._*
+*_backup/
+*.bak
+*.swp
+*.tmp
+*.log
+
+# ----------------------------------------
+# 🧪 Testing & Local-only Files
+/tests/
+/scripts/
+coverage/
+tmp/
+cache/
+.cache/
+
+# ----------------------------------------
+# 🖼️ Branding Assets (used only in build-github/repo)
+branding/*.tmp
+branding/*.bak
+branding/*.log
+
+# ----------------------------------------
+# 🧱 Build Artifacts (ignore all generated builds)
+/dist/
+
+# ----------------------------------------
+# 🧰 Build Scripts (keep tracked)
+!/build.sh
+!/build-github.sh
+!/build-repo.sh\
+
+# ----------------------------------------
+# 🔐 Environment & Config Files
+.env
+.env.*
+*.local
+
+# ----------------------------------------
+# 🗺️ Source Maps & Minified Maps
+*.map
+*.min.css.map
+*.min.js.map
+
+# ----------------------------------------
+# 🧱 Archives & Packages
+*.tar
+*.tar.gz
+*.phar
+*.zip

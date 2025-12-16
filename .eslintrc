@@ -1,0 +1,18 @@
+{
+  "env": {
+    "browser": true,
+    "jquery": true,
+    "es6": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": ["prettier"],
+  "rules": {
+    "indent": ["error", "tab"],
+    "no-unused-vars": "warn",
+    "no-console": "off",
+    "prettier/prettier": "error"
+  }
+}

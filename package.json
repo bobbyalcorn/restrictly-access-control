@@ -1,0 +1,30 @@
+{
+	"name": "restrictly",
+	"version": "1.0.0",
+	"description": "Restrictly™ — The Ultimate Access Control System for WordPress.",
+	"scripts": {
+		"lint": "npm run lint:js && npm run lint:css",
+		"lint:js": "node ./node_modules/eslint/bin/eslint.js assets/js/ && node ./node_modules/jshint/bin/jshint assets/js/",
+		"lint:css": "npx stylelint \"assets/css/**/*.css\" --allow-empty-input",
+		"format": "npx prettier --write 'assets/**/*.{js,css}'",
+		"format:check": "npx prettier --check 'assets/**/*.{js,css}'",
+		"check": "npm run lint && vendor/bin/phpcs --standard=phpcs.xml.dist",
+		"validate-all": "npm run lint && vendor/bin/phpcs --standard=phpcs.xml.dist && composer validate && composer audit && composer phpstan -- --memory-limit=1G",
+		"fix": "vendor/bin/phpcbf --standard=phpcs.xml.dist",
+		"build": "bash build.sh",
+		"build:github": "bash build-github.sh",
+		"build:repo": "bash build-repo.sh",
+		"pretest": "npm run check",
+		"phpstan": "vendor/bin/phpstan analyse --memory-limit=1G"
+	},
+	"devDependencies": {
+		"@wordpress/stylelint-config": "^23.25.0",
+		"eslint": "^9.38.0",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-prettier": "^5.5.4",
+		"jshint": "^2.13.6",
+		"prettier": "^3.3.3",
+		"stylelint": "^16.25.0",
+		"stylelint-config-standard": "^39.0.1"
+	}
+}

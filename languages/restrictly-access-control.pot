@@ -1,0 +1,388 @@
+# Copyright (C) 2025 Bobby Alcorn
+# This file is distributed under the GPL-2.0+.
+msgid ""
+msgstr ""
+"Project-Id-Version: Restrictly - Access Control 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/restrictly-access-control\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-12-16T02:11:40+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: restrictly-access-control\n"
+
+#. Plugin Name of the plugin
+#: restrictly-access-control.php
+msgid "Restrictly - Access Control"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: restrictly-access-control.php
+msgid "https://restrictlypro.com"
+msgstr ""
+
+#. Description of the plugin
+#: restrictly-access-control.php
+msgid "Lightweight, performance-focused access control for WordPress."
+msgstr ""
+
+#. Author of the plugin
+#: restrictly-access-control.php
+msgid "Bobby Alcorn"
+msgstr ""
+
+#. Author URI of the plugin
+#: restrictly-access-control.php
+msgid "https://github.com/bobbyalcorn"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:92
+msgid "Restrictly Content Visibility Bulk Edit"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:99
+#: src/Core/Admin/BulkEditContentType.php:100
+#: src/Core/Admin/QuickEditContentType.php:82
+#: src/Core/Admin/QuickEditContentType.php:83
+#: src/Core/Admin/StandardEditContentType.php:101
+#: src/Core/Admin/StandardEditContentType.php:102
+msgid "Login Status:"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:102
+#: src/Core/Admin/BulkEditContentType.php:151
+msgid "- No Change -"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:103
+#: src/Core/Admin/ContentTypeBase.php:102
+#: src/Core/Admin/Menus.php:638
+#: src/Core/Admin/QuickEditContentType.php:85
+#: src/Core/Admin/StandardEditContentType.php:105
+msgid "Everyone"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:104
+#: src/Core/Admin/ContentTypeBase.php:98
+#: src/Core/Admin/Menus.php:639
+#: src/Core/Admin/QuickEditContentType.php:86
+#: src/Core/Admin/StandardEditContentType.php:108
+msgid "Logged In Users"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:105
+#: src/Core/Admin/ContentTypeBase.php:100
+#: src/Core/Admin/Menus.php:640
+#: src/Core/Admin/QuickEditContentType.php:87
+#: src/Core/Admin/StandardEditContentType.php:111
+msgid "Logged Out Users"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:116
+#: src/Core/Admin/QuickEditContentType.php:98
+#: src/Core/Admin/StandardEditContentType.php:122
+msgid "Specific Roles:"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:148
+#: src/Core/Admin/BulkEditContentType.php:149
+#: src/Core/Admin/QuickEditContentType.php:126
+#: src/Core/Admin/QuickEditContentType.php:127
+#: src/Core/Admin/StandardEditContentType.php:147
+#: src/Core/Admin/StandardEditContentType.php:148
+msgid "Enforcement Action:"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:152
+#: src/Core/Admin/ContentTypeBase.php:123
+#: src/Core/Admin/QuickEditContentType.php:129
+#: src/Core/Admin/StandardEditContentType.php:151
+msgid "Use Default"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:153
+#: src/Core/Admin/BulkEditContentType.php:166
+#: src/Core/Admin/ContentTypeBase.php:117
+#: src/Core/Admin/QuickEditContentType.php:130
+#: src/Core/Admin/QuickEditContentType.php:143
+#: src/Core/Admin/StandardEditContentType.php:154
+#: src/Core/Admin/StandardEditContentType.php:170
+msgid "Custom Message"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:154
+#: src/Core/Admin/ContentTypeBase.php:119
+#: src/Core/Admin/QuickEditContentType.php:131
+#: src/Core/Admin/StandardEditContentType.php:157
+msgid "Custom URL"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:165
+#: src/Core/Admin/QuickEditContentType.php:142
+#: src/Core/Admin/StandardEditContentType.php:169
+msgid "Custom Message:"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:178
+#: src/Core/Admin/BulkEditContentType.php:179
+#: src/Core/Admin/QuickEditContentType.php:155
+#: src/Core/Admin/QuickEditContentType.php:156
+#: src/Core/Admin/StandardEditContentType.php:182
+#: src/Core/Admin/StandardEditContentType.php:183
+msgid "Custom Forward URL:"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:210
+msgid "Security check failed"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:215
+msgid "Invalid request"
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:254
+msgid "No changes were provided."
+msgstr ""
+
+#: src/Core/Admin/BulkEditContentType.php:271
+msgid "Bulk edit successful!"
+msgstr ""
+
+#: src/Core/Admin/ContentTypeBase.php:121
+msgid "-"
+msgstr ""
+
+#: src/Core/Admin/ContentTypeBase.php:140
+msgid "Logged In Status"
+msgstr ""
+
+#: src/Core/Admin/ContentTypeBase.php:141
+msgid "User Role"
+msgstr ""
+
+#: src/Core/Admin/ContentTypeBase.php:142
+msgid "Enforcement Action"
+msgstr ""
+
+#: src/Core/Admin/ContentTypeBase.php:164
+msgid "Any"
+msgstr ""
+
+#: src/Core/Admin/Menus.php:202
+#: src/Core/Admin/Menus.php:214
+#: src/Core/Admin/Menus.php:225
+msgid "Notice:"
+msgstr ""
+
+#: src/Core/Admin/Menus.php:203
+msgid "The current theme does not support menus. Menu restrictions will not be applied."
+msgstr ""
+
+#: src/Core/Admin/Menus.php:215
+msgid "No menus have been detected. To enforce menu restrictions, please assign a menu in"
+msgstr ""
+
+#: src/Core/Admin/Menus.php:217
+msgid "Appearance > Menus"
+msgstr ""
+
+#: src/Core/Admin/Menus.php:218
+msgid "Menu restrictions will not be applied until a menu is created."
+msgstr ""
+
+#: src/Core/Admin/Menus.php:226
+msgid "No registered menus have been detected. Menu restrictions will not be applied until a menu is created."
+msgstr ""
+
+#: src/Core/Admin/Menus.php:245
+msgid "Restrictly Notice:"
+msgstr ""
+
+#. translators: %d is the number of menu items with mismatched restrictions.
+#: src/Core/Admin/Menus.php:251
+#, php-format
+msgid "There is %d menu item with mismatched restrictions."
+msgid_plural "There are %d menu items with mismatched restrictions."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Core/Admin/Menus.php:525
+#: src/Core/Admin/Menus.php:586
+msgid "Invalid setup: \"Everyone\" cannot have role restrictions selected."
+msgstr ""
+
+#: src/Core/Admin/Menus.php:555
+msgid "Role mismatch. Page has no role restrictions."
+msgstr ""
+
+#: src/Core/Admin/Menus.php:563
+msgid "Role mismatch. Page allows only:"
+msgstr ""
+
+#: src/Core/Admin/Menus.php:570
+msgid "Role mismatch. Menu has no role restrictions. Page allows only:"
+msgstr ""
+
+#: src/Core/Admin/Menus.php:581
+msgid "Visibility mismatch. Page requires:"
+msgstr ""
+
+#: src/Core/Admin/Menus.php:593
+msgid "Page has no restrictions. Menu should be set to \"Everyone\" with no roles."
+msgstr ""
+
+#: src/Core/Admin/Menus.php:621
+msgid "Restrictly Menu Visibility"
+msgstr ""
+
+#: src/Core/Admin/Menus.php:633
+msgid "Visibility:"
+msgstr ""
+
+#: src/Core/Admin/Menus.php:652
+msgid "Allowed Roles:"
+msgstr ""
+
+#: src/Core/Admin/QuickEditContentType.php:73
+#: src/Core/Admin/StandardEditContentType.php:58
+msgid "Restrictly Content Visibility"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:61
+#: src/Core/Admin/Settings.php:121
+msgid "Restrictly Settings"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:62
+msgid "Restrictly"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:79
+msgid "You do not have permission to access this page."
+msgstr ""
+
+#: src/Core/Admin/Settings.php:128
+msgid "Automatic Cleanup:"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:129
+msgid "When you uninstall Restrictly™, all saved options, visibility settings, and post meta are fully removed for a clean uninstall."
+msgstr ""
+
+#: src/Core/Admin/Settings.php:136
+msgid "Access Control"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:140
+#: src/Core/Admin/Settings.php:247
+msgid "Menu Restrictions"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:152
+msgid "Access Control Settings"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:155
+msgid "Content Types"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:156
+msgid "Select the content types that you want to restrict access to."
+msgstr ""
+
+#: src/Core/Admin/Settings.php:170
+msgid "Default Content Enforcement Action"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:172
+msgid "This determines what happens when a user tries to access a restricted post, page, or other content type. It does not affect menu or navigation visibility."
+msgstr ""
+
+#: src/Core/Admin/Settings.php:181
+msgid "Show a Message"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:184
+msgid "Forward to a URL"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:192
+msgid "Default Message"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:199
+msgid "Forward URL"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:209
+msgid "Always Allow Administrators"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:210
+msgid "When enabled, Administrators can always view and edit all content regardless of Restrictly™ restrictions."
+msgstr ""
+
+#: src/Core/Admin/Settings.php:215
+msgid "Always allow Administrators full access"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:223
+msgid "Block Editor Visibility"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:226
+msgid "Control whether Restrictly™ visibility indicators appear inside Full Site Editing (FSE) Navigation menus. This helps keep your workspace clean when editing menus."
+msgstr ""
+
+#: src/Core/Admin/Settings.php:236
+msgid "Show visibility indicators in Navigation menus"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:251
+msgid "Heads up!"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:252
+msgid "You are using a Full Site Editing (block-based) theme. Restrictly™ will manage Navigation block visibility directly inside the Site Editor instead of traditional menus."
+msgstr ""
+
+#: src/Core/Admin/Settings.php:258
+msgid "Mismatch Highlighting"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:262
+msgid "Visually highlight menu items that may have permission inconsistencies."
+msgstr ""
+
+#: src/Core/Admin/Settings.php:273
+msgid "Save Settings"
+msgstr ""
+
+#: src/Core/Admin/Settings.php:382
+msgid "Restrictly settings have been saved."
+msgstr ""
+
+#: src/Core/Common/Base.php:318
+msgid "Settings"
+msgstr ""
+
+#: src/Core/Common/Enforcement.php:100
+#: src/Core/Common/Enforcement.php:178
+msgid "You do not have permission to view this content."
+msgstr ""
+
+#: src/Core/Common/Enforcement.php:164
+msgid "Redirect Loop Detected: You cannot access this content."
+msgstr ""
+
+#: src/Core/Common/Enforcement.php:165
+#: src/Core/Common/Enforcement.php:179
+msgid "Access Denied"
+msgstr ""
+
+#: assets/js/bulk-edit-content-type.js:157
+msgid "Bulk edit failed:"
+msgstr ""
