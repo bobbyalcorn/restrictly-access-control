@@ -8,7 +8,7 @@
 
 namespace Restrictly\Core\Common;
 
-use Restrictly\Core\Common\RoleHelper;
+use Restrictly\Core\Services\RoleService;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -136,7 +136,7 @@ class Base {
 		$icon_url = esc_url( $plugin_base_url . 'assets/images/restrictly-icon.png' );
 		$inline   = "
 		.restrictly-icon-16, .restrictly-icon-24 {
-			background-image: url('{$icon_url}');
+			background-image: url('$icon_url');
 			background-size: contain;
 			background-repeat: no-repeat;
 			background-position: center;
@@ -346,7 +346,7 @@ class Base {
 		$plugin_base_url  = self::$plugin_base_url;
 
 		// ---------------------------------------------------------------------
-		// 1️⃣ Core Restrictly™ Block Visibility (Content Blocks)
+		// Core Restrictly™ Block Visibility (Content Blocks)
 		// ---------------------------------------------------------------------
 		$block_js_path = $plugin_base_path . 'assets/js/block-visibility.js';
 		$block_js_ver  = file_exists( $block_js_path ) ? filemtime( $block_js_path ) : time();
@@ -371,7 +371,7 @@ class Base {
 		);
 
 		// ---------------------------------------------------------------------
-		// 2️⃣ Restrictly™ FSE Navigation Visibility (Navigation, Submenus, etc.)
+		// Restrictly™ FSE Navigation Visibility (Navigation, Submenus, etc.)
 		// ---------------------------------------------------------------------
 		$nav_js_path = $plugin_base_path . 'assets/js/editor.js';
 		$nav_js_ver  = file_exists( $nav_js_path ) ? filemtime( $nav_js_path ) : time();
@@ -387,8 +387,8 @@ class Base {
 		// ---------------------------------------------------------------------
 		// Provide available roles to both systems (block + navigation)
 		// ---------------------------------------------------------------------
-		if ( class_exists( RoleHelper::class ) ) {
-			$available_roles = RoleHelper::get_available_roles();
+		if ( class_exists( RoleService::class ) ) {
+			$available_roles = RoleService::get_available_roles();
 		} else {
 			$wp_roles        = wp_roles();
 			$available_roles = is_object( $wp_roles ) ? $wp_roles->get_names() : array();

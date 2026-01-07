@@ -15,6 +15,12 @@ namespace Restrictly\Core\Admin;
 use Restrictly\Core\Common\Enforcement;
 use Restrictly\Core\Common\Base;
 use WP_REST_Request;
+use WP_Post;
+use stdClass;
+use DOMNodeList;
+use DOMDocument;
+use DOMElement;
+use DOMXPath;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -172,7 +178,7 @@ class FSENavigation {
 		}
 
 		$libxml_previous_state = libxml_use_internal_errors( true );
-		$dom                   = new \DOMDocument();
+		$dom                   = new DOMDocument();
 
 		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$dom->preserveWhiteSpace = true;
@@ -186,7 +192,7 @@ class FSENavigation {
 		libxml_clear_errors();
 		libxml_use_internal_errors( $libxml_previous_state );
 
-		$xpath = new \DOMXPath( $dom );
+		$xpath = new DOMXPath( $dom );
 		$links = $xpath->query( '//a[@href]' );
 
 		$admin_override = get_option( 'restrictly_always_allow_admins', false );
@@ -197,9 +203,9 @@ class FSENavigation {
 			return $content;
 		}
 
-		if ( $links instanceof \DOMNodeList ) {
+		if ( $links instanceof DOMNodeList ) {
 			foreach ( $links as $link ) {
-				if ( ! $link instanceof \DOMElement ) {
+				if ( ! $link instanceof DOMElement ) {
 					continue;
 				}
 
@@ -368,7 +374,7 @@ class FSENavigation {
 		}
 
 		$libxml_previous_state = libxml_use_internal_errors( true );
-		$dom                   = new \DOMDocument();
+		$dom                   = new DOMDocument();
 		$dom->loadHTML( '<?xml encoding="utf-8" ?>' . $content );
 		libxml_clear_errors();
 		libxml_use_internal_errors( $libxml_previous_state );
@@ -413,14 +419,21 @@ class FSENavigation {
 	/**
 	 * Filters pages returned by get_pages() to remove restricted ones.
 	 *
-	 * @param array<int, \WP_Post> $pages Array of page objects.
+	 * @param array<int, WP_Post>  $pages Array of page objects.
 	 * @param array<string, mixed> $_args Query args.
 	 *
-	 * @return array<int, \WP_Post> Filtered pages.
+	 * @return array<int, WP_Post> Filtered pages.
 	 *
 	 * @since 0.1.0
 	 */
 	public function filter_auto_nav_pages( array $pages, array $_args ): array {
+		if (
+			(int) get_option( 'restrictly_always_allow_admins', 1 ) === 1
+			&& current_user_can( 'manage_options' )
+		) {
+			return $pages;
+		}
+
 		unset( $_args );
 
 		// Do not filter inside admin or REST requests.
@@ -488,15 +501,15 @@ class FSENavigation {
 	 * Filters navigation content before it's saved.
 	 * Removes restricted pages from 'Add all pages' results before storage.
 	 *
-	 * @param \stdClass        $prepared_post The prepared post object.
-	 * @param \WP_REST_Request $request       The REST request object.
-	 * @phpstan-param \WP_REST_Request<array<string, mixed>> $request
+	 * @param stdClass        $prepared_post The prepared post object.
+	 * @param WP_REST_Request $request       The REST request object.
+	 * @phpstan-param WP_REST_Request<array<string, mixed>> $request
 	 *
-	 * @return \stdClass Modified post object.
+	 * @return stdClass Modified post object.
 	 *
 	 * @since 0.1.0
 	 */
-	public function filter_navigation_before_save( \stdClass $prepared_post, \WP_REST_Request $request ): \stdClass { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+	public function filter_navigation_before_save( stdClass $prepared_post, WP_REST_Request $request ): stdClass { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		if ( empty( $prepared_post->post_content ) ) {
 			return $prepared_post;
 		}

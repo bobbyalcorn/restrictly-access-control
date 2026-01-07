@@ -9,6 +9,8 @@
 
 namespace Restrictly\Core\Admin;
 
+use Restrictly\Core\Services\ContentTypeService;
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -92,18 +94,8 @@ class Settings {
 		$current_forward_url       = get_option( 'restrictly_default_forward_url', self::DEFAULT_URL );
 		$current_enable_menu_flags = (int) get_option( 'restrictly_enable_menu_flags', self::DEFAULT_MENU_FLAGS );
 
-		// Get core post types allowed in Restrictly™ Free.
-		$allowed_post_types = array( 'post', 'page' );
-		$post_types         = get_post_types( array( 'public' => true ), 'objects' );
-
-		// Filter to allowed post types.
-		$post_types = array_filter(
-			$post_types,
-			function ( $type, $slug ) use ( $allowed_post_types ) {
-				return in_array( $slug, $allowed_post_types, true );
-			},
-			ARRAY_FILTER_USE_BOTH
-		);
+		// Get available content types.
+		$available_content_types = ContentTypeService::get_available_content_types();
 
 		// Detect if using a Full Site Editing (block) theme.
 		$is_block_theme = function_exists( 'wp_is_block_theme' ) && wp_is_block_theme();
@@ -156,10 +148,11 @@ class Settings {
 								<p class="restrictly-subsection-description"><?php esc_html_e( 'Select the content types that you want to restrict access to.', 'restrictly-access-control' ); ?></p>
 
 								<div class="restrictly-checkbox-group restrictly-m-b-20">
-									<?php foreach ( $post_types as $pt ) : ?>
+									<?php foreach ( $available_content_types as $type => $label ) : ?>
 										<label class="restrictly-label">
-											<input type="checkbox" class="restrictly-checkbox" name="restrictly_content_types[]" value="<?php echo esc_attr( $pt->name ); ?>" <?php checked( in_array( $pt->name, $current_content_types, true ) ); ?>>
-											<?php echo esc_html( $pt->labels->singular_name ?? $pt->name ); ?>
+											<input type="checkbox" class="restrictly-checkbox" name="restrictly_content_types[]" value="<?php echo esc_attr( $type ); ?>"
+												<?php checked( in_array( $type, $current_content_types, true ) ); ?>>
+											<?php echo esc_html( $label ); ?>
 										</label>
 									<?php endforeach; ?>
 								</div>
@@ -319,31 +312,6 @@ class Settings {
 		return filter_var( $url, FILTER_VALIDATE_URL ) ? esc_url_raw( $url ) : '';
 	}
 
-	/**
-	 * Sanitizes the Restrictly™ content types array.
-	 *
-	 * Filters the provided post type array against allowed public post types
-	 * and ensures each item is text-field sanitized.
-	 *
-	 * @param mixed $input The raw post type input array (user-submitted).
-	 *
-	 * @return array<int,string> The sanitized and validated list of content types.
-	 *
-	 * @since 0.1.0
-	 */
-	public static function sanitize_restrictly_content_types( mixed $input ): array {
-		$allowed = array_keys( get_post_types( array( 'public' => true ) ) );
-		$output  = array();
-
-		foreach ( (array) $input as $post_type ) {
-			if ( in_array( $post_type, $allowed, true ) ) {
-				$output[] = sanitize_text_field( $post_type );
-			}
-		}
-
-		return $output;
-	}
-
 	/** Save settings */
 	public static function save_restrictly_settings(): void {
 		if ( ! isset( $_POST['restrictly_save_settings'] ) ) {
@@ -354,7 +322,7 @@ class Settings {
 		$content_types = isset( $_POST['restrictly_content_types'] )
 				? array_map( 'sanitize_text_field', (array) wp_unslash( $_POST['restrictly_content_types'] ) )
 				: array();
-		update_option( 'restrictly_content_types', self::sanitize_restrictly_content_types( $content_types ) );
+		update_option( 'restrictly_content_types', ContentTypeService::sanitize_content_types( $content_types ) );
 
 		$action = isset( $_POST['restrictly_default_action'] )
 				? sanitize_text_field( wp_unslash( $_POST['restrictly_default_action'] ) )

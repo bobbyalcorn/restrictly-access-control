@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Restrictly - Access Control
  * Plugin URI:  https://restrictlypro.com
- * Description: Lightweight, performance-focused access control for WordPress.
- * Version:     0.1.0
+ * Description: Performance-focused access control for WordPress, enforcing rule-based visibility across content, menus, and blocks with a clean core.
+ * Version:     0.1.1
  * Requires at least: 5.2
  * Tested up to:      6.9
  * Requires PHP:     7.4

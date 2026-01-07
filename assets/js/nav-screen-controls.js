@@ -7,9 +7,6 @@
  * visibility and role restrictions to be applied directly to `wp_navigation` posts
  * (Appearance → Editor → Navigation).
  *
- * Dynamically loads available roles from RoleHelper::get_available_roles()
- * (localized into `window.RestrictlyBlockData.roles`).
- *
  * @package Restrictly
  *
  * @since   0.1.0

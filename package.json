@@ -1,7 +1,7 @@
 {
 	"name": "restrictly",
-	"version": "1.0.0",
-	"description": "Restrictly™ — The Ultimate Access Control System for WordPress.",
+	"version": "0.1.1",
+	"description": "Restrictly™ - The Ultimate Access Control System for WordPress.",
 	"scripts": {
 		"lint": "npm run lint:js && npm run lint:css",
 		"lint:js": "node ./node_modules/eslint/bin/eslint.js assets/js/ && node ./node_modules/jshint/bin/jshint assets/js/",

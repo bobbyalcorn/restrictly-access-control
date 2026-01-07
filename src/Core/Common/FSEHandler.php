@@ -20,6 +20,7 @@ defined( 'ABSPATH' ) || exit;
  * @since 0.1.0
  */
 class FSEHandler {
+
 	/**
 	 * Initialize Restrictly™ FSE compatibility.
 	 *
@@ -35,6 +36,25 @@ class FSEHandler {
 	}
 
 	/**
+	 * Emit a debug event for Restrictly FSE observability.
+	 *
+	 * @param string              $event   Event name.
+	 * @param array<string,mixed> $context Optional contextual data.
+	 *
+	 * @return void
+	 *
+	 * @since 0.1.1
+	 */
+	private static function emit_debug_event( string $event, array $context = array() ): void {
+		/**
+		 * We intentionally do NOT check is_debug_enabled() here.
+		 * The gate lives in Enforcement and Pro controls the listener.
+		 */
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName
+		do_action( 'restrictly/debug/event', $event, $context );
+	}
+
+	/**
 	 * Filters block output to apply Restrictly™ access rules.
 	 *
 	 * Checks Navigation and Query-type blocks for Restrictly restrictions
@@ -43,13 +63,13 @@ class FSEHandler {
 	 * @param string              $block_content The rendered block content.
 	 * @param array<string,mixed> $block The block data array (name, attrs, etc.).
 	 *
-	 * @return string Filtered block content (may be empty if restricted).
+	 * @return string Filtered block content (could be empty if restricted).
 	 *
 	 * @since 0.1.0
 	 */
 	public static function filter_block_output( string $block_content, array $block ): string {
 		// Skip filtering inside the Site Editor or admin UI.
-		if ( is_admin() || ( function_exists( 'wp_is_block_theme_editor' ) && wp_is_block_theme_editor() ) ) {
+		if ( is_admin() ) {
 			return $block_content;
 		}
 
@@ -63,12 +83,52 @@ class FSEHandler {
 			$url   = $attrs['url'] ?? '';
 
 			if ( ! empty( $url ) && ! self::user_can_view_url( $url ) ) {
+				// Emit debug event.
+				self::emit_debug_event(
+					'fse_visibility_denied',
+					array(
+						'type'   => 'navigation_link',
+						'url'    => $url,
+						'block'  => 'core/navigation-link',
+						'reason' => 'user_cannot_view_url',
+					)
+				);
+
 				return '';
+			}
+
+			if ( ! empty( $url ) ) {
+				// Emit debug event.
+				self::emit_debug_event(
+					'fse_visibility_allowed',
+					array(
+						'type'  => 'navigation_link',
+						'url'   => $url,
+						'block' => 'core/navigation-link',
+					)
+				);
 			}
 		}
 
 		// Handle Query/Post blocks.
 		if ( in_array( $block['blockName'], array( 'core/query', 'core/post-template', 'core/latest-posts' ), true ) ) {
+			// Emit debug event.
+			self::emit_debug_event(
+				'fse_query_evaluated',
+				array(
+					'block' => $block['blockName'],
+				)
+			);
+
+			return self::filter_restricted_posts( $block_content );
+		}
+
+		// Catch auto-generated navigation markup (no blockName).
+		if (
+			str_contains( $block_content, '<nav' )
+			|| str_contains( $block_content, 'wp-block-navigation' )
+			|| str_contains( $block_content, '<ul' )
+		) {
 			return self::filter_restricted_posts( $block_content );
 		}
 
@@ -85,18 +145,17 @@ class FSEHandler {
 	 * @since 0.1.0
 	 */
 	private static function user_can_view_url( string $url ): bool {
+
 		// Try url_to_postid first.
 		$post_id = url_to_postid( $url );
 
-		// If url_to_postid fails, try to get the post by slug.
+		// If url_to_postid fails, try to resolve by slug.
 		if ( ! $post_id ) {
-			// Parse the URL to get the path.
 			$path = wp_parse_url( $url, PHP_URL_PATH );
+
 			if ( $path ) {
-				// Remove leading/trailing slashes and get the slug.
 				$slug = trim( $path, '/' );
 
-				// Try to get post by name (slug) using get_posts.
 				$posts = get_posts(
 					array(
 						'name'           => $slug,
@@ -107,7 +166,7 @@ class FSEHandler {
 				);
 
 				if ( ! empty( $posts ) ) {
-					$post_id = $posts[0]->ID;
+					$post_id = (int) $posts[0]->ID;
 				}
 			}
 		}
@@ -117,33 +176,8 @@ class FSEHandler {
 			return true;
 		}
 
-		// LOGIN STATUS ENFORCEMENT.
-		$login_setting = get_post_meta( $post_id, 'restrictly_page_access_by_login_status', true );
-		if ( in_array( $login_setting, array( 'logged_in', 'logged_in_users' ), true ) && ! is_user_logged_in() ) {
-			return false;
-		}
-		if ( in_array( $login_setting, array( 'logged_out', 'logged_out_users' ), true ) && is_user_logged_in() ) {
-			return false;
-		}
-
-		// ROLE-BASED ENFORCEMENT.
-		$role_restrictions = get_post_meta( $post_id, 'restrictly_page_access_by_role', true );
-		if ( ! empty( $role_restrictions ) && is_array( $role_restrictions ) ) {
-			// If user is not logged in, deny access.
-			if ( ! is_user_logged_in() ) {
-				return false;
-			}
-			$user = wp_get_current_user();
-			foreach ( $user->roles as $role ) {
-				if ( in_array( $role, $role_restrictions, true ) ) {
-					return true;
-				}
-			}
-			return false; // No matching roles.
-		}
-
-		// Default allow if no restrictions apply.
-		return true;
+		// Defer ALL access decisions to the central enforcement engine.
+		return Enforcement::can_access( $post_id );
 	}
 
 	/**
@@ -167,6 +201,16 @@ class FSEHandler {
 		foreach ( $matches[1] as $url ) {
 			$can_view = self::user_can_view_url( $url );
 			if ( ! $can_view ) {
+				// Emit debug event.
+				self::emit_debug_event(
+					'fse_post_removed',
+					array(
+						'url'    => $url,
+						'block'  => 'query_output',
+						'reason' => 'restricted_post',
+					)
+				);
+
 				// Try multiple patterns to remove the restricted item.
 				$url_escaped = preg_quote( $url, '/' );
 

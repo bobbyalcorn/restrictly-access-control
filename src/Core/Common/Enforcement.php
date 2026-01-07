@@ -12,6 +12,8 @@
 
 namespace Restrictly\Core\Common;
 
+use WP_Post;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -25,6 +27,15 @@ defined( 'ABSPATH' ) || exit;
  * @since 0.1.0
  */
 class Enforcement {
+
+	/**
+	 * Prevents emitting duplicate admin override debug events within a single request.
+	 *
+	 * @var bool
+	 *
+	 * @since 0.1.1
+	 */
+	private static bool $admin_override_emitted = false;
 
 	/**
 	 * Initializes the enforcement logic.
@@ -53,6 +64,176 @@ class Enforcement {
 	}
 
 	/**
+	 * Check whether Restrictly debug mode is enabled.
+	 *
+	 * This is a passive gate used only for emitting debug events.
+	 * It MUST NOT affect enforcement behavior.
+	 *
+	 * @return bool
+	 *
+	 *  @since 0.1.1
+	 */
+	private static function is_debug_enabled(): bool {
+		/**
+		 * Filter: restrictly/debug/is_enabled
+		 *
+		 * Allows Restrictly Pro to enable debug event emission.
+		 *
+		 * @param bool $enabled Whether debug mode is enabled.
+		 *
+		 * @since 0.1.1
+		 */
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName
+		$enabled = apply_filters( 'restrictly/debug/is_enabled', false );
+
+		return (bool) $enabled;
+	}
+
+	/**
+	 * Emit a debug event for Restrictly observability.
+	 *
+	 * This method is fully gated and MUST NOT affect enforcement behavior.
+	 *
+	 * @param string              $event   Event name.
+	 * @param array<string,mixed> $context Optional contextual data.
+	 *
+	 * @return void
+	 *
+	 * @since 0.1.1
+	 */
+	private static function emit_debug_event( string $event, array $context = array() ): void {
+		if ( ! self::is_debug_enabled() ) {
+			return;
+		}
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName
+		do_action( 'restrictly/debug/event', $event, $context );
+	}
+
+	/**
+	 * Build enforcement context for the current request.
+	 *
+	 * This context is read-only and MUST NOT affect enforcement behavior.
+	 * It exists solely to expose structured request data to observers
+	 * and Pro modules via emitters.
+	 *
+	 * @param int $post_id Post ID being evaluated.
+	 *
+	 * @return array<string,mixed>
+	 *
+	 * @since 0.1.1
+	 */
+	private static function build_enforcement_context( int $post_id ): array {
+
+		return array(
+			'post_id'      => $post_id,
+			'post_type'    => get_post_type( $post_id ),
+			'is_logged_in' => is_user_logged_in(),
+			'user_id'      => get_current_user_id(),
+			'roles'        => is_user_logged_in() ? wp_get_current_user()->roles : array(),
+			'is_admin'     => is_admin(),
+			'is_ajax'      => wp_doing_ajax(),
+			'is_rest'      => defined( 'REST_REQUEST' ) && REST_REQUEST,
+			'request_uri'  => isset( $_SERVER['REQUEST_URI'] )
+				? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) )
+				: '',
+		);
+	}
+
+	/**
+	 * Determine whether any enforcement signal denies access.
+	 *
+	 * Signals are deny-only. A single failed signal results in denial.
+	 *
+	 * @param array<string,mixed> $signals Enforcement signals.
+	 *
+	 * @return bool True if denied by signals, false otherwise.
+	 *
+	 * @since 0.1.1
+	 */
+	private static function signals_deny_access( array $signals ): bool {
+
+		foreach ( $signals as $signal ) {
+			if (
+				is_array( $signal )
+				&& array_key_exists( 'passed', $signal )
+				&& false === $signal['passed']
+			) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Emit denial events and execute enforcement.
+	 *
+	 * Fires internal hooks, emits debug information, and executes the
+	 * configured enforcement action when access is denied.
+	 *
+	 * @param array<string,mixed> $context       Request and content context data.
+	 * @param array<string,mixed> $signals       Evaluated restriction signals.
+	 * @param string              $action        Enforcement action to execute.
+	 * @param string|null         $message       Optional denial message.
+	 * @param string|null         $redirect_url  Optional redirect destination.
+	 * @param string              $reason        Internal denial reason identifier.
+	 *
+	 * @return void
+	 *
+	 * @since 0.1.1
+	 */
+	private static function emit_enforcement_denial(
+		array $context,
+		array $signals,
+		string $action,
+		?string $message,
+		?string $redirect_url,
+		string $reason = 'rule_denied'
+	): void {
+
+		do_action(
+            // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+			'restrictly/enforcement/decision',
+			false,
+			$context,
+			$signals
+		);
+
+		$deny_payload = array();
+
+		$deny_payload = apply_filters(
+            // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+			'restrictly/enforcement/deny_payload',
+			$deny_payload,
+			$context,
+			$signals
+		);
+
+		do_action(
+            // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+			'restrictly/enforcement/denied',
+			$context,
+			$signals,
+			$deny_payload
+		);
+
+		self::emit_debug_event(
+			'final_decision',
+			array(
+				'decision' => 'deny',
+				'reason'   => $reason,
+				'post_id'  => $context['post_id'] ?? null,
+			)
+		);
+
+		self::restrictly_handle_enforcement(
+			$action,
+			$message,
+			$redirect_url
+		);
+	}
+
+	/**
 	 * Enforces page access restrictions based on login status and user roles.
 	 *
 	 * @return void
@@ -69,17 +250,49 @@ class Enforcement {
 		global $post;
 
 		// Only restrict single pages, posts, or CPTs.
-		if ( ! is_singular() || null === $post->ID || 0 === $post->ID ) {
+		if ( ! is_singular() || ! isset( $post->ID ) || 0 === (int) $post->ID ) {
 			return;
 		}
 
+		$post_id = (int) $post->ID;
+
+		// ---------------------------------------------------------------------
+		// Build + emit enforcement context (read-only)
+		// ---------------------------------------------------------------------
+		$context = self::build_enforcement_context( $post_id );
+
+		$context = apply_filters(
+            // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+			'restrictly/enforcement/context',
+			$context
+		);
+
+		// Emit debug event.
+		self::emit_debug_event(
+			'page_enforcement_checked',
+			array(
+				'post_id'      => get_queried_object_id(),
+				'is_logged_in' => is_user_logged_in(),
+			)
+		);
+
 		// Get the restriction settings for this content.
-		$post_id            = $post->ID;
 		$login_status       = get_post_meta( $post_id, 'restrictly_page_access_by_login_status', true );
 		$allowed_roles      = get_post_meta( $post_id, 'restrictly_page_access_by_role', true );
 		$enforcement_action = get_post_meta( $post_id, 'restrictly_enforcement_action', true );
 		$custom_message     = get_post_meta( $post_id, 'restrictly_custom_message', true );
 		$custom_forward_url = get_post_meta( $post_id, 'restrictly_custom_forward_url', true );
+
+		// Emit debug event.
+		self::emit_debug_event(
+			'evaluation_start',
+			array(
+				'context'            => 'page_access',
+				'post_id'            => get_queried_object_id(),
+				'is_logged_in'       => is_user_logged_in(),
+				'enforcement_action' => $enforcement_action ?? null,
+			)
+		);
 
 		// Ensure roles are an array.
 		$allowed_roles = is_array( $allowed_roles ) ? $allowed_roles : array();
@@ -87,8 +300,6 @@ class Enforcement {
 		// Fallback to Global Defaults When "Use Default" is Selected.
 		if ( empty( $enforcement_action ) || 'default' === $enforcement_action ) {
 			$enforcement_action = get_option( 'restrictly_default_action', 'custom_message' );
-
-			// Ignore any saved page-specific values if "Use Default" is selected.
 			$custom_message     = '';
 			$custom_forward_url = '';
 		}
@@ -111,21 +322,87 @@ class Enforcement {
 		$user_roles   = $user->roles;
 		$is_logged_in = is_user_logged_in();
 
+		// ---------------------------------------------------------------------
+		// Collect enforcement signals (passive)
+		// ---------------------------------------------------------------------
+		$signals = array();
+
+		$signals = apply_filters(
+            // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+			'restrictly/enforcement/signals',
+			$signals,
+			$context
+		);
+
+		// ---------------------------------------------------------------------
 		// Enforce login status restrictions.
+		// ---------------------------------------------------------------------
 		if (
 			( 'logged_in_users' === $login_status && ! $is_logged_in ) ||
 			( 'logged_out_users' === $login_status && $is_logged_in )
 		) {
-			self::restrictly_handle_enforcement( $enforcement_action, $custom_message, $custom_forward_url );
+
+			self::emit_enforcement_denial(
+				$context,
+				$signals,
+				$enforcement_action,
+				$custom_message,
+				$custom_forward_url
+			);
+			return;
 		}
 
+		// ---------------------------------------------------------------------
 		// Enforce role-based restrictions.
+		// ---------------------------------------------------------------------
 		if ( ! empty( $allowed_roles ) ) {
 			if ( empty( $user_roles ) || empty( array_intersect( $allowed_roles, $user_roles ) ) ) {
-				// User is either not logged in or doesn't match allowed roles.
-				self::restrictly_handle_enforcement( $enforcement_action, $custom_message, $custom_forward_url );
+
+				self::emit_enforcement_denial(
+					$context,
+					$signals,
+					$enforcement_action,
+					$custom_message,
+					$custom_forward_url
+				);
+				return;
 			}
 		}
+
+		// ---------------------------------------------------------------------
+		// APPLY SIGNALS (DENY-ONLY)
+		// ---------------------------------------------------------------------
+		if ( self::signals_deny_access( $signals ) ) {
+
+			self::emit_enforcement_denial(
+				$context,
+				$signals,
+				$enforcement_action,
+				$custom_message,
+				$custom_forward_url,
+				'signal_denied'
+			);
+			return;
+		}
+
+		// ---------------------------------------------------------------------
+		// ALLOW
+		// ---------------------------------------------------------------------
+		do_action(
+            // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+			'restrictly/enforcement/decision',
+			true,
+			$context,
+			$signals
+		);
+
+		self::emit_debug_event(
+			'evaluation_end',
+			array(
+				'decision' => 'allow',
+				'post_id'  => get_queried_object_id(),
+			)
+		);
 	}
 
 	/**
@@ -142,7 +419,16 @@ class Enforcement {
 	public static function restrictly_handle_enforcement( string $action, ?string $message, ?string $redirect_url ): void {
 		// Always allow users with admin capabilities full access if enabled.
 		if ( (int) get_option( 'restrictly_always_allow_admins', 1 ) === 1 && current_user_can( 'manage_options' ) ) {
-			return; // Skip enforcement completely.
+			// Emit debug event.
+			self::emit_debug_event(
+				'admin_override_applied',
+				array(
+					'context'  => 'page_enforcement',
+					'decision' => 'allow',
+					'reason'   => 'always_allow_admins',
+				)
+			);
+			return;
 		}
 
 		// If the enforcement action is a custom URL but no URL is set, redirect logged-out users to the login page.
@@ -184,8 +470,8 @@ class Enforcement {
 	/**
 	 * Filters menu items before they are displayed, based on login status and roles.
 	 *
-	 * @param \WP_Post[] $items Array of WP_Post menu item objects.
-	 * @return \WP_Post[] Filtered menu items.
+	 * @param WP_Post[] $items Array of WP_Post menu item objects.
+	 * @return WP_Post[] Filtered menu items.
 	 *
 	 * @since 0.1.0
 	 */
@@ -193,6 +479,16 @@ class Enforcement {
 		// Global Administrator Override (Always Allow Administrators).
 		$admin_override = get_option( 'restrictly_always_allow_admins', false );
 		if ( $admin_override ) {
+			// Emit debug event.
+			self::emit_debug_event(
+				'admin_override_applied',
+				array(
+					'context'  => 'menu_visibility',
+					'decision' => 'allow',
+					'reason'   => 'always_allow_admins',
+				)
+			);
+
 			$user = wp_get_current_user();
 
 			if ( $user && in_array( 'administrator', (array) $user->roles, true ) ) {
@@ -219,14 +515,14 @@ class Enforcement {
 	/**
 	 * Determines if a menu item should be removed based on restrictions.
 	 *
-	 * @param \WP_Post $item Menu item object.
+	 * @param WP_Post  $item Menu item object.
 	 * @param bool     $is_logged_in Whether user is logged in.
 	 * @param string[] $user_roles Current user's roles.
 	 * @return bool True if item should be removed.
 	 *
 	 * @since 0.1.0
 	 */
-	private static function should_remove_menu_item( \WP_Post $item, bool $is_logged_in, array $user_roles ): bool {
+	private static function should_remove_menu_item( WP_Post $item, bool $is_logged_in, array $user_roles ): bool {
 		// Get the menu item's visibility and allowed roles.
 		$visibility = get_post_meta( $item->ID, 'restrictly_menu_visibility', true );
 
@@ -333,6 +629,34 @@ class Enforcement {
 			return false;
 		}
 
+		// ---------------------------------------------------------------------
+		// Apply enforcement signals (deny-only)
+		// ---------------------------------------------------------------------
+		$context = array(
+			'post_id'      => $post_id,
+			'is_logged_in' => $is_logged_in,
+			'user_roles'   => $user_roles,
+		);
+
+		$context = apply_filters(
+            // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+			'restrictly/enforcement/context',
+			$context
+		);
+
+		$signals = array();
+
+		$signals = apply_filters(
+            // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+			'restrictly/enforcement/signals',
+			$signals,
+			$context
+		);
+
+		if ( self::signals_deny_access( $signals ) ) {
+			return false;
+		}
+
 		// Allow public by default.
 		return true;
 	}
@@ -365,8 +689,31 @@ class Enforcement {
 
 		// Ask Enforcement if the block should be visible.
 		if ( ! self::can_view_by_visibility( $visibility, $roles ) ) {
+			// Emit debug event.
+			self::emit_debug_event(
+				'fse_visibility_denied',
+				array(
+					'type'       => 'block',
+					'block_name' => $block['blockName'] ?? null,
+					'visibility' => $visibility,
+					'roles'      => $roles,
+					'decision'   => 'deny',
+				)
+			);
 			return '';
 		}
+
+		// Emit debug event.
+		self::emit_debug_event(
+			'fse_visibility_allowed',
+			array(
+				'type'       => 'block',
+				'block_name' => $block['blockName'] ?? null,
+				'visibility' => $visibility,
+				'roles'      => $roles,
+				'decision'   => 'allow',
+			)
+		);
 
 		return $block_content;
 	}
@@ -386,7 +733,24 @@ class Enforcement {
 	 */
 	public static function can_view_by_visibility( string $visibility, array $roles = array() ): bool {
 		// Always allow administrators if configured to do so.
-		if ( (int) get_option( 'restrictly_always_allow_admins', 1 ) === 1 && current_user_can( 'manage_options' ) ) {
+		if (
+			(int) get_option( 'restrictly_always_allow_admins', 1 ) === 1
+			&& current_user_can( 'manage_options' )
+		) {
+			if ( ! self::$admin_override_emitted ) {
+				// Emit debug event.
+				self::emit_debug_event(
+					'admin_override_applied',
+					array(
+						'context'  => 'global_override',
+						'decision' => 'allow',
+						'reason'   => 'always_allow_admins',
+					)
+				);
+
+				self::$admin_override_emitted = true;
+			}
+
 			return true;
 		}
 
@@ -450,12 +814,12 @@ class Enforcement {
 	 * Adds a generic message or extra metadata when REST content is redacted.
 	 *
 	 * @param array<string, mixed> $response The REST response after redaction.
-	 * @param \WP_Post             $post     The post being processed. (Unused).
+	 * @param WP_Post              $post     The post being processed. (Unused).
 	 * @param array<string, mixed> $request  The REST request. (Unused).
 	 *
 	 * @return array<string, mixed> Modified response.
 	 */
-	public static function add_rest_redaction_message( array $response, \WP_Post $post, array $request ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+	public static function add_rest_redaction_message( array $response, WP_Post $post, array $request ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 		// Add a "restricted" flag if you want.
 		$response['restrictly_restricted'] = true;

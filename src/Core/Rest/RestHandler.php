@@ -14,6 +14,8 @@ namespace Restrictly\Core\Rest;
 
 use Restrictly\Core\Common\Enforcement;
 use WP_REST_Request;
+use WP_REST_Response;
+use WP_Post;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -68,11 +70,11 @@ class RestHandler {
 	 * If a post is restricted, its content and excerpt are redacted
 	 * before the REST API returns the data to the client.
 	 *
-	 * @param \WP_REST_Response $response REST response object.
-	 * @param \WP_Post          $post     Post object.
-	 * @param \WP_REST_Request  $request  REST request object.
+	 * @param WP_REST_Response $response REST response object.
+	 * @param WP_Post          $post     Post object.
+	 * @param WP_REST_Request  $request  REST request object.
 	 *
-	 * @return \WP_REST_Response Filtered REST response.
+	 * @return WP_REST_Response Filtered REST response.
 	 *
 	 * @since 0.1.0
 	 */
@@ -118,11 +120,11 @@ class RestHandler {
 			/**
 			 * Allows developers to modify or override the redacted REST response.
 			 *
-			 * @param \WP_REST_Response       $response The redacted REST response.
-			 * @param \WP_Post                $post     The related post object.
-			 * @param \WP_REST_Request<mixed> $request  The original REST request.
+			 * @param WP_REST_Response       $response The redacted REST response.
+			 * @param WP_Post                $post     The related post object.
+			 * @param WP_REST_Request<mixed> $request  The original REST request.
 			 *
-			 * @return \WP_REST_Response
+			 * @return WP_REST_Response
 			 *
 			 * @since 0.1.0
 			 */

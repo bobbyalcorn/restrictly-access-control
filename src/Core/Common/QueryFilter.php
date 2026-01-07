@@ -42,6 +42,25 @@ class QueryFilter {
 	}
 
 	/**
+	 * Emit a debug event for Restrictly query observability.
+	 *
+	 * @param string              $event   Event name.
+	 * @param array<string,mixed> $context Optional contextual data.
+	 *
+	 * @return void
+	 *
+	 * @since 0.1.1
+	 */
+	private static function emit_debug_event( string $event, array $context = array() ): void {
+		/**
+		 * We intentionally do NOT check is_debug_enabled() here.
+		 * The gate lives in Enforcement and Pro controls the listener.
+		 */
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName
+		do_action( 'restrictly/debug/event', $event, $context );
+	}
+
+	/**
 	 * Filters restricted content out of search and archive queries for unauthorized users.
 	 *
 	 * Adds meta query constraints to hide posts and pages that the current user
@@ -56,6 +75,24 @@ class QueryFilter {
 	public static function filter_restricted_content( WP_Query $query ): void {
 		// Only affect front-end, main queries.
 		if ( is_admin() || ! $query->is_main_query() ) {
+			return;
+		}
+
+		// Always allow administrators if configured.
+		if (
+			(int) get_option( 'restrictly_always_allow_admins', 1 ) === 1
+			&& current_user_can( 'manage_options' )
+		) {
+			// Emit debug event.
+			self::emit_debug_event(
+				'admin_override_applied',
+				array(
+					'context'  => 'query_filter',
+					'decision' => 'allow',
+					'reason'   => 'always_allow_admins',
+				)
+			);
+
 			return;
 		}
 
@@ -110,6 +147,17 @@ class QueryFilter {
 
 			// Keep all relations consistent (outer AND with inner OR).
 			$merged_meta_query = array_merge( $existing_meta_query, array( $meta_query ) );
+
+			// Emit debug event.
+			self::emit_debug_event(
+				'query_influenced',
+				array(
+					'context'                => $query->is_search() ? 'search' : ( $query->is_home() ? 'home' : 'archive' ),
+					'is_logged_in'           => is_user_logged_in(),
+					'user_roles'             => is_user_logged_in() ? wp_get_current_user()->roles : array(),
+					'meta_constraints_added' => true,
+				)
+			);
 
 			$query->set( 'meta_query', $merged_meta_query );
 		}

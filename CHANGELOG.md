@@ -4,6 +4,40 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and 
 
 ---
 
+## **[0.1.1] - 2025-12-17**
+
+### 🧭 Observability & Debug Lifecycle Hooks
+
+This release adds **internal observability hooks** used by **Restrictly™ Pro** for debugging, diagnostics, and access decision tracing.
+There are **no behavior changes** to access control logic.
+
+---
+
+### 🔍 Added
+
+* **Debug Gate Filter** – Introduced a gated debug enablement filter for Pro-level observability.
+* **Access Enforcement Lifecycle Events** – Emits events for:
+  * Evaluation start
+  * Evaluation end
+  * Final access decision
+* **Administrator Override Observability** – Emits signals when the always-allow administrator override is applied.
+* **Query Influence Detection** – Emits signals when search, archive, or home queries are influenced by Restrictly™ rules.
+* **FSE Observability Hooks** – Emits debug events for:
+  * Navigation link visibility decisions
+  * Block-level visibility enforcement
+  * Query and post list filtering inside Full Site Editing block themes
+
+---
+
+### 🧠 Developer Notes
+
+* All debug emits are **passively gated** and disabled by default unless enabled by Restrictly™ Pro.
+* No hooks override or alter existing enforcement behavior.
+* No access control logic was modified.
+* Fully backward compatible with all supported WordPress and PHP versions.
+
+---
+
 ## **[0.1.0] - 2025-12-05**
 
 ### 🎉 Initial Public Release

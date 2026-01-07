@@ -1,6 +1,6 @@
 {
 	"name": "bobbyalcorn/restrictly-access-control",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Restrictly - Lightweight, performance-focused access control for WordPress.",
 	"type": "wordpress-plugin",
 	"license": "GPL-2.0-or-later",

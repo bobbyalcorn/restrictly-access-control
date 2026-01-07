@@ -12,7 +12,8 @@
 namespace Restrictly\Core\Admin;
 
 use Restrictly\Core\Common\Base;
-use Restrictly\Core\Common\RoleHelper;
+use Restrictly\Core\Services\RoleService;
+use WP_Post;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -270,8 +271,8 @@ class Menus {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param \WP_Post&object{classes:array<string>,object_id:int,type:string} $menu_item Menu item object.
-	 * @return \WP_Post The modified menu item with Restrictly flags applied.
+	 * @param WP_Post&object{classes:array<string>,object_id:int,type:string} $menu_item Menu item object.
+	 * @return WP_Post The modified menu item with Restrictly flags applied.
 	 */
 	public static function restrictly_mark_mismatched_menu_items( $menu_item ) {
 		if ( ! get_option( 'restrictly_enable_menu_flags', 1 ) ) {
@@ -491,6 +492,7 @@ class Menus {
 	 *
 	 * @param int   $item_id Menu item ID.
 	 * @param mixed $item    Menu item object.
+	 *
 	 * @return void
 	 *
 	 * @since 0.1.0
@@ -501,7 +503,7 @@ class Menus {
 		$visibility = ( '' !== $visibility && false !== $visibility ) ? $visibility : 'everyone';
 		$roles      = get_post_meta( $item_id, 'restrictly_menu_roles', true );
 		$roles      = is_array( $roles ) ? $roles : array();
-		$all_roles  = RoleHelper::get_available_roles();
+		$all_roles  = RoleService::get_available_roles();
 
 		// Initialize warnings and flags.
 		$role_warning       = '';

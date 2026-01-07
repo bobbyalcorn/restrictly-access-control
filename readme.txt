@@ -7,17 +7,19 @@ Requires at least: 5.2
 Tested up to: 6.9
 Requires PHP: 7.4
 PHP Tested Up To: 8.3
-Stable tag: 0.1.0
+Stable tag: 0.1.1
 Text Domain: restrictly-access-control
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.txt
 
-Restrictly™ is a lightweight access control plugin for WordPress that restricts content, menus, and FSE blocks by role or login status.
+Performance-focused access control for WordPress, enforcing rule-based visibility across content, menus, and blocks with a clean core.
 
 == Description ==
 
 Restrictly™ delivers professional-grade access control without compromising your site's speed or reliability.
-It lets you restrict **pages**, **posts**, **menus**, **Full Site Editing (FSE) blocks**, **search results**, and **REST API responses** based on user roles and login status — all while maintaining full compatibility with themes and page builders.
+It enforces rule-based visibility across **pages**, **posts**, **menus**, **Full Site Editing (FSE) blocks**, **search results**, and **REST API responses**, while maintaining full compatibility with themes and page builders.
+
+In the free version, access rules are driven by user roles and login status, providing a clean and reliable foundation for content and navigation control.
 
 Includes **Extended Visibility Filtering**, which automatically hides restricted content from search results, archives, and public listings.
 
@@ -32,13 +34,13 @@ For full documentation, setup guides, and developer notes, visit the [official R
   - Search results
   - Category, tag, and author archives
   - Home listings and custom queries
-- **REST API Enforcement** – Applies identical access rules to API responses, redacting restricted content for unauthorized users.
+- **REST API Enforcement** – Applies Restrictly™ visibility rules to REST API responses, automatically filtering restricted content for unauthorized users.
 - **Dynamic Menu Visibility (Classic Menus)** – Control menu item visibility by login state or user role in the classic menu editor.
 - **Full, Quick, and Bulk Edit Support** – Manage restrictions from any editor interface.
 - **Sortable, Filterable Columns** – Instantly see and organize restricted items in list tables.
 - **Administrator Override** – Allows administrators to bypass restrictions for testing.
 - **Divi & Page Builder Compatibility** – Works perfectly with Divi and other builders.
-- **Lightweight & Secure** – Built entirely on WordPress core APIs with strict sanitization and escaping.
+- **Performance-Focused & Secure** – Built entirely on WordPress core APIs with strict sanitization and escaping.
 - **Translation Ready** – Includes a `.pot` file for localization.
 - **Clean Uninstall** – Removes all plugin data and options when uninstalled.
 
@@ -47,7 +49,7 @@ For full documentation, setup guides, and developer notes, visit the [official R
 = Requirements =
 - **WordPress:** 5.2 or higher (tested up to 6.9)
 - **PHP:** 7.4 or higher (tested up to 8.3)
-- **Stable Version:** 0.1.0
+- **Stable Version:** 0.1.1
 
 = Automatic Installation =
 1. Go to **Plugins → Add New** in your WordPress dashboard.
@@ -137,6 +139,18 @@ Restrictly™ does **not** collect user data, track activity, or transmit inform
 
 == Changelog ==
 
+= 0.1.1 =
+Observability and internal lifecycle hooks added for Restrictly™ Pro debugging and diagnostics.
+
+- Added gated debug event emission across all access enforcement paths.
+- Added evaluation start, evaluation end, and final decision signals.
+- Added administrator override observability (always-allow behavior).
+- Added query influence detection for search, archive, and home queries.
+- Added Full Site Editing (FSE) block, navigation, and query observability hooks.
+- No behavior changes to access control logic.
+- No overrides introduced.
+- Fully backward compatible.
+
 = 0.1.0 =
 Initial public release of **Restrictly™**, a lightweight, performance-focused access control system for WordPress.
 
@@ -153,6 +167,9 @@ Initial public release of **Restrictly™**, a lightweight, performance-focused 
 - Fully compliant with PHPCS/WPCS, PHPStan, ESLint, and Stylelint.
 
 == Upgrade Notice ==
+
+= 0.1.1 =
+Adds internal observability hooks used by Restrictly™ Pro for debugging and access diagnostics. No behavior changes.
 
 = 0.1.0 =
 Initial public release of **Restrictly™**, including FSE block visibility, navigation visibility, REST API enforcement, and role-based content control.

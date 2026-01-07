@@ -8,7 +8,7 @@
 
 namespace Restrictly\Core\Admin;
 
-use Restrictly\Core\Common\RoleHelper;
+use Restrictly\Core\Services\RoleService;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -97,7 +97,7 @@ class QuickEditContentType extends ContentTypeBase {
 							<td>
 								<span class="title restrictly-screen-reader-span-140"><strong><?php esc_html_e( 'Specific Roles:', 'restrictly-access-control' ); ?></strong></span>
 								<?php
-								$available_roles = RoleHelper::get_available_roles();
+								$available_roles = RoleService::get_available_roles();
 
 								foreach ( $available_roles as $role_key => $role_name ) {
 									printf(
@@ -114,7 +114,6 @@ class QuickEditContentType extends ContentTypeBase {
 							</td>
 						</tr>
 					</table>
-
 				</div>
 
 				<!-- Enforcement Action -->

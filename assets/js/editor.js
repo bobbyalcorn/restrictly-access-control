@@ -6,10 +6,6 @@
  * Extends Gutenberg’s Navigation blocks with Restrictly visibility attributes
  * and a sidebar panel that controls who can see each navigation item.
  *
- * Mirrors block-visibility.js but is scoped to navigation-related blocks only.
- * Dynamically lists available roles from RoleHelper::get_available_roles()
- * (localized into `window.RestrictlyBlockData.roles`).
- *
  * @package Restrictly
  *
  * @since   0.1.0
@@ -238,6 +234,4 @@
 				}
 		);
 	})();
-
-	// Corresponding styles: assets/css/admin-block-visibility.css
 })(window.wp);
